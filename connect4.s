@@ -1,17 +1,15 @@
-# TP2 - Jeu de puissance 4
-# Kameha Dylan Labaste-Nauta LABK02049404 (Groupe 30)
-# 
-# Ce programme est un dérivé jeu puissance 4.
+# Connect 4
+# This program is a derivative version of the game Connect4
 
 .data
-	# Appel systemes RARS
+	# System calls RARS
 	.eqv ReadChar, 12
 	.eqv PrintChar, 11
 	.eqv PrintString, 4
 	.eqv Exit, 10
 	
-	# Messages presentés aux joueurs
-	messErreur : .string "Erreur d'entrée."
+	# Messages displayed to players
+	messErreur : .string "Erreur d'entrï¿½e."
 	messJoueurXJoue : .string "Le joueur X doit jouer.\n"
 	messJoueurOJoue : .string "Le joueur O doit jouer.\n"
 	messJoueurXDebord : .string "Le joueur X perd.\n"
@@ -19,7 +17,7 @@
 	messJoueurXGagne : .string "Le joueur X gagne.\n"
 	messJoueurOGagne : .string "Le joueur O gagne.\n"
 	
-	# Initialisation de la grille de jeu
+	# Initializing the game grid
 	grille : .asciz ":",".",".",".",".",".",".",".",":","\n"
 		 .asciz ":",".",".",".",".",".",".",".",":","\n"
 		 .asciz ":",".",".",".",".",".",".",".",":","\n"
@@ -29,18 +27,18 @@
 		 .eqv grilleLigne, 6
 		 .eqv grilleColonne, 10
 	
-	# Initialisation de la ligne à rajouter lorsqu'un des joueurs débordent
+	# Initialization of the line to be added when one of the players overflows
 	ligneDebord : .asciz ".",".",".",".",".",".",".",".",".","\n"
 		      .eqv ligneDebordLen, 10
 	
 .text
-	la s0, grille	# Initialize l'adresse de la grille de jeu
+	la s0, grille	# Initialize the game grid address
 	
 resetTourJoueurO :
-	li s6,0		# Reset le tour du Joueur O qui vient de joué
+	li s6,0		# Reset the turn of player O who just played
 	
 joueurX :
-	li s5, 1	# Compteur indiquant que le joueur X joue
+	li s5, 1	# Counter indicating that player X is playing
 	
 	li a7, ReadChar
 	ecall
@@ -49,10 +47,10 @@ joueurX :
 	j commande
 	
 resetTourJoueurX :
-	li s5,0		# Reset le tour du Joueur X qui vient de joué
+	li s5,0		# Reset the turn of player X who just played
 	
 joueurO :
-	li s6, 1	# Compteur indiquant que le joueur O joue
+	li s6, 1	# Counter indicating that player O is playing
 		
 	li a7, ReadChar
 	ecall
@@ -60,7 +58,7 @@ joueurO :
 		
 	j commande
 
-# Liste d'appel des commandes du jeu
+# Game command call list
 commande :				
 	li t0, 'q'
 	beq a0, t0, sortie
@@ -84,11 +82,11 @@ commande :
 	beq a0, t0, afficherGrille
 	
 	li t0, '\n'
-	beq a0, t0, sautDeLigne		# Permet d'ignorer un saut de ligne
+	beq a0, t0, sautDeLigne		# Allows you to ignore a line break
 		
-	j erreurEntree			# Si aucune commande est valide, branche vers l'affichage d'un message d'erreur et quitte le jeu
+	j erreurEntree			# If no command is valid, proceed to display an error message and exit the game.
 
-# Si un saut de ligne est rencontré, le joueur courant est invité à resaisir une valeur valide
+# If a line break is encountered, the current player is asking to re-enter a valid value.
 sautDeLigne :
 	bgtz s5, joueurX
 	bgtz s6, joueurO
@@ -96,9 +94,9 @@ sautDeLigne :
 # Appel la routine pour ajouter un jeton dans la colonne choisi par les joueurs
 ajouterJetonColonne :			
 	jal routineAjouterJeton		# Routine pour ajouter un jeton dans une colonne
-	j valideQuiGagne		# Après que le jeton est ajouté, cette routine vérifie si les jetons du joueur courant est aligné
+	j valideQuiGagne		# Aprï¿½s que le jeton est ajoutï¿½, cette routine vï¿½rifie si les jetons du joueur courant est alignï¿½
 		
-# Vérifier à chaque tour si un joueur a gagné en alignant ses jetons
+# Vï¿½rifier ï¿½ chaque tour si un joueur a gagnï¿½ en alignant ses jetons
 valideQuiGagne :
 	lb t1, 0(s3)
 	li t0, 'X'
@@ -106,42 +104,42 @@ valideQuiGagne :
 	li t0, 'O'
 	beq t0, t1, valideJoueurO	# Branche vers la validation de l'alignement des jetons du joueur O
 
-# Si c'est au tour du joueur X, cela valide si ses jetons sont alignés
+# Si c'est au tour du joueur X, cela valide si ses jetons sont alignï¿½s
 valideJoueurX :					
-		mv t5, s1				# Déplace la ligne courante dans un registre temporaire
+		mv t5, s1				# Dï¿½place la ligne courante dans un registre temporaire
 		li s7, 1				# Initialise l'indice confirmant l'alignement des jetons
 	
-	# Valide si les jetons du joueur X sont alignés de haut en bas
+	# Valide si les jetons du joueur X sont alignï¿½s de haut en bas
 	patternBasX :				
-		li t4, 4				# Maximum de jetons à aligner
-		beq s7, t4, joueurXGagne		# Si 4 jetons X sont alignés, branche vers l'affichage de la grille et l'annonce de la victoire du joueur X 
+		li t4, 4				# Maximum de jetons ï¿½ aligner
+		beq s7, t4, joueurXGagne		# Si 4 jetons X sont alignï¿½s, branche vers l'affichage de la grille et l'annonce de la victoire du joueur X 
 		li t0, grilleLigne
 		addi t5, t5, 1				# Descend d'une ligne
 		bge t5, t0, patternGaucheX		# Si on arrive au maximum des lignes de la grille, cela change de chemin de validation
 		
 		li t0, grilleColonne
-		mul s3, t5, t0				# Vers la ligne où chercher le jeton X
-		add s3, s3, s2				# Déplace le pointeur vers la case à vérifier
-		slli s3, s3, 1				# Décale le pointeur pour aligner les bits
-		add s3, s3, s0				# Calcul finale de l'adresse de l'élément pointé
+		mul s3, t5, t0				# Vers la ligne oï¿½ chercher le jeton X
+		add s3, s3, s2				# Dï¿½place le pointeur vers la case ï¿½ vï¿½rifier
+		slli s3, s3, 1				# Dï¿½cale le pointeur pour aligner les bits
+		add s3, s3, s0				# Calcul finale de l'adresse de l'ï¿½lï¿½ment pointï¿½
 		
 		lb t2, 0(s3)
 		li t3, 'O'
-		beq t2, t3, patternGaucheX		# Change de chemin de validation, lorsqu'un jeton O est rencontré
-		addi s7, s7, 1				# Incremente si un jeton X adjacent est trouvé dans la direction du chemin de validation
+		beq t2, t3, patternGaucheX		# Change de chemin de validation, lorsqu'un jeton O est rencontrï¿½
+		addi s7, s7, 1				# Incremente si un jeton X adjacent est trouvï¿½ dans la direction du chemin de validation
 		j patternBasX
 	
-	# Valide si les jetons du joueur X sont alignés vers la gauche
+	# Valide si les jetons du joueur X sont alignï¿½s vers la gauche
 	patternGaucheX :			
 		mv t5, s2				# Initialise l'index du pointeur courant dans un registre temporaire
-		li s7, 1				# Réinitialise l'indice confirmant l'alignement des jetons car on change de chemin de validation
+		li s7, 1				# Rï¿½initialise l'indice confirmant l'alignement des jetons car on change de chemin de validation
 	
 	loopPatternGaucheX :
 		li t4, 4
 		beq s7, t4, joueurXGagne
-		addi t5, t5, -1				# Déplace le pointeur d'une case vers la gauche
+		addi t5, t5, -1				# Dï¿½place le pointeur d'une case vers la gauche
 		li t0, 0
-		ble t5, t0, patternDroiteX		# Si le pointeur dépasse la colonne la plus à gauche de la grille, cela change de chemin de validation
+		ble t5, t0, patternDroiteX		# Si le pointeur dï¿½passe la colonne la plus ï¿½ gauche de la grille, cela change de chemin de validation
 		
 		li t0, grilleColonne
 		mul s3, s1, t0
@@ -151,22 +149,22 @@ valideJoueurX :
 		
 		lb t2, 0(s3)
 		li t3, 'O'
-		beq t2, t3, patternDroiteX		# Change de chemin de validation, lorsqu'un jeton O est rencontré
+		beq t2, t3, patternDroiteX		# Change de chemin de validation, lorsqu'un jeton O est rencontrï¿½
 		li t3, '.'
-		beq t2, t3, patternDroiteX		# Change de chemin de validation, lorsqu'une case vide est rencontré
+		beq t2, t3, patternDroiteX		# Change de chemin de validation, lorsqu'une case vide est rencontrï¿½
 		addi s7, s7, 1
 		j loopPatternGaucheX
 	
-	# Valide si les jetons du joueur X sont alignés vers la droite
+	# Valide si les jetons du joueur X sont alignï¿½s vers la droite
 	patternDroiteX :
-		mv t5, s2				# Déplace l'index du pointeur courant dans un registre temporaire
+		mv t5, s2				# Dï¿½place l'index du pointeur courant dans un registre temporaire
 	
 	loopPatternDroiteX :
 		li t4, 4
 		beq s7, t4, joueurXGagne
-		addi t5, t5, 1				# Déplace le pointeur d'une case vers la droite
+		addi t5, t5, 1				# Dï¿½place le pointeur d'une case vers la droite
 		li t0, 8
-		bge t5, t0, patternDiagHautDroiteX	# Si le pointeur dépasse la colonne la plus à gauche de la grille, cela change de chemin de validation
+		bge t5, t0, patternDiagHautDroiteX	# Si le pointeur dï¿½passe la colonne la plus ï¿½ gauche de la grille, cela change de chemin de validation
 		
 		li t0, grilleColonne
 		mul s3, s1, t0
@@ -182,21 +180,21 @@ valideJoueurX :
 		addi s7, s7, 1
 		j loopPatternDroiteX
 	
-	# 1ère partie pour valider si les jetons du joueur X sont alignés en diagonale de haut en bas vers la droite à partir du pointeur courant
+	# 1ï¿½re partie pour valider si les jetons du joueur X sont alignï¿½s en diagonale de haut en bas vers la droite ï¿½ partir du pointeur courant
 	patternDiagHautDroiteX :
 		mv t5, s1				# Initialise la ligne courante dans un registre temporaire
 		mv t6, s2				# Initialise l'index du pointeur courant dans un registre temporaire
-		li s7, 1				# Réinitialise l'indice confirmant l'alignement des jetons car on change de chemin de validation
+		li s7, 1				# Rï¿½initialise l'indice confirmant l'alignement des jetons car on change de chemin de validation
 	
 	loopPatternDiagHautDroiteX :
 		li t4, 4
 		beq s7, t4, joueurXGagne
 		li t0, 0
 		addi t5, t5, -1				# Monte d'une ligne
-		ble t5, t0, patternDiagBasGaucheX	# Si on arrive au délà des lignes de la grille, cela change de chemin de validation
+		ble t5, t0, patternDiagBasGaucheX	# Si on arrive au dï¿½lï¿½ des lignes de la grille, cela change de chemin de validation
 		li t0, 8
-		addi t6, t6, 1				# Déplace le pointeur d'une case vers la droite
-		bge t6, t0, patternDiagBasGaucheX	# Si le pointeur dépasse la colonne la plus à droite de la grille, cela change de chemin de validation
+		addi t6, t6, 1				# Dï¿½place le pointeur d'une case vers la droite
+		bge t6, t0, patternDiagBasGaucheX	# Si le pointeur dï¿½passe la colonne la plus ï¿½ droite de la grille, cela change de chemin de validation
 		
 		li t0, grilleColonne
 		mul s3, t5, t0
@@ -212,7 +210,7 @@ valideJoueurX :
 		addi s7, s7, 1
 		j loopPatternDiagHautDroiteX
 		
-	# 2ème partie pour valider si les jetons du joueur X sont alignés en diagonale de haut en bas vers la droite à partir du pointeur courant
+	# 2ï¿½me partie pour valider si les jetons du joueur X sont alignï¿½s en diagonale de haut en bas vers la droite ï¿½ partir du pointeur courant
 	patternDiagBasGaucheX :			
 		mv t5, s1				# Initialise la ligne courante dans un registre temporaire
 		mv t6, s2				# Initialise l'index du pointeur courant dans un registre temporaire
@@ -224,7 +222,7 @@ valideJoueurX :
 		addi t5, t5, 1				# Descend d'une ligne
 		bge t5, t0, patternDiagHautGaucheX
 		li t0, 0
-		addi t6, t6, -1				# Déplace le pointeur d'une case vers la gauche
+		addi t6, t6, -1				# Dï¿½place le pointeur d'une case vers la gauche
 		ble t6, t0, patternDiagHautGaucheX
 		
 		li t0, grilleColonne
@@ -241,11 +239,11 @@ valideJoueurX :
 		addi s7, s7, 1
 		j loopPatternDiagBasGaucheX
 	
-	# 1ère partie pour valider si les jetons du joueur X sont alignés en diagonale de haut en bas vers la gauche à partir du pointeur courant
+	# 1ï¿½re partie pour valider si les jetons du joueur X sont alignï¿½s en diagonale de haut en bas vers la gauche ï¿½ partir du pointeur courant
 	patternDiagHautGaucheX :
 		mv t5, s1			# Initialise la ligne courante dans un registre temporaire
 		mv t6, s2			# Initialise l'index du pointeur courant dans un registre temporaire
-		li s7, 1			# Réinitialise l'indice confirmant l'alignement des jetons
+		li s7, 1			# Rï¿½initialise l'indice confirmant l'alignement des jetons
 	
 	loopPatternDiagHautGaucheX :
 		li t4, 4
@@ -253,7 +251,7 @@ valideJoueurX :
 		addi t5, t5, -1			# Monte d'une ligne
 		bltz t5, patternDiagBasDroiteX
 		li t0, 0
-		addi t6, t6, -1			# Déplace le pointeur d'une case vers la gauche
+		addi t6, t6, -1			# Dï¿½place le pointeur d'une case vers la gauche
 		ble t6, t0, patternDiagBasDroiteX
 		
 		li t0, grilleColonne
@@ -270,7 +268,7 @@ valideJoueurX :
 		addi s7, s7, 1
 		j loopPatternDiagHautGaucheX
 		
-	# 2ème partie pour valider si les jetons du joueur X sont alignés en diagonale de haut en bas vers la gauche à partir du pointeur courant
+	# 2ï¿½me partie pour valider si les jetons du joueur X sont alignï¿½s en diagonale de haut en bas vers la gauche ï¿½ partir du pointeur courant
 	patternDiagBasDroiteX :
 		mv t5, s1			# Initialise la ligne courante dans un registre temporaire
 		mv t6, s2			# Initialise l'index du pointeur courant dans un registre temporaire
@@ -280,9 +278,9 @@ valideJoueurX :
 		beq s7, t4, joueurXGagne
 		li t0, grilleLigne
 		addi t5, t5, 1			# Descend d'une ligne
-		bge t5, t0, tourSuivant		# Si aucun jetons du joueur X n'est alignés, c'est au joueur O de jouer
+		bge t5, t0, tourSuivant		# Si aucun jetons du joueur X n'est alignï¿½s, c'est au joueur O de jouer
 		li t0, 8
-		addi t6, t6, 1			# Déplace le pointeur d'une case vers la droite
+		addi t6, t6, 1			# Dï¿½place le pointeur d'une case vers la droite
 		bge t6, t0, tourSuivant
 		
 		li t0, grilleColonne
@@ -299,18 +297,18 @@ valideJoueurX :
 		addi s7, s7, 1
 		j loopPatternDiagBasDroiteX	
 	
-	# Si le joueur X aligne ses jetons, la grille est affiché et le joueur X gagne	
+	# Si le joueur X aligne ses jetons, la grille est affichï¿½ et le joueur X gagne	
 	joueurXGagne :				
 		jal routineAfficheGrilleGagnant		# Appel de la routine pour afficher la grille du joueur gagnant X
 		j sortie				# Quitte le jeu
 
-# Si c'est au tour du joueur O, cela valide si ses jetons sont alignés
-# Le chemin de validation est le même que pour le Joueur X, sauf que cette fois, si un jeton X est rencontré, cela change de chemin de validation ou passe au tour suivant.
+# Si c'est au tour du joueur O, cela valide si ses jetons sont alignï¿½s
+# Le chemin de validation est le mï¿½me que pour le Joueur X, sauf que cette fois, si un jeton X est rencontrï¿½, cela change de chemin de validation ou passe au tour suivant.
 valideJoueurO :					
 		mv t5, s1
 		li s7, 1
 
-	# Valide si les jetons du joueur O sont alignés de haut en bas
+	# Valide si les jetons du joueur O sont alignï¿½s de haut en bas
 	patternBasO :				
 		li t4, 4
 		beq s7, t4, joueurOGagne	
@@ -330,7 +328,7 @@ valideJoueurO :
 		addi s7, s7, 1
 		j patternBasO
 		
-	# Valide si les jetons du joueur O sont alignés vers la gauche
+	# Valide si les jetons du joueur O sont alignï¿½s vers la gauche
 	patternGaucheO :
 		mv t5, s2
 		li s7, 1
@@ -355,7 +353,7 @@ valideJoueurO :
 		addi s7, s7, 1
 		j loopPatternGaucheO
 	
-	# Valide si les jetons du joueur O sont alignés vers la droite
+	# Valide si les jetons du joueur O sont alignï¿½s vers la droite
 	patternDroiteO :			
 		mv t5, s2
 	
@@ -380,7 +378,7 @@ valideJoueurO :
 		addi s7, s7, 1
 		j loopPatternDroiteO
 	
-	# 1ère partie pour valider si les jetons du joueur O sont alignés en diagonale de haut en bas vers la droite à partir du pointeur courant
+	# 1ï¿½re partie pour valider si les jetons du joueur O sont alignï¿½s en diagonale de haut en bas vers la droite ï¿½ partir du pointeur courant
 	patternDiagHautDroiteO :		
 		mv t5, s1
 		mv t6, s2			
@@ -410,7 +408,7 @@ valideJoueurO :
 		addi s7, s7, 1
 		j loopPatternDiagHautDroiteO
 	
-	# 2ème partie pour valider si les jetons du joueur X sont alignés en diagonale de haut en bas vers la droite à partir du pointeur courant
+	# 2ï¿½me partie pour valider si les jetons du joueur X sont alignï¿½s en diagonale de haut en bas vers la droite ï¿½ partir du pointeur courant
 	patternDiagBasGaucheO :			
 		mv t5, s1			
 		mv t6, s2			
@@ -439,7 +437,7 @@ valideJoueurO :
 		addi s7, s7, 1
 		j loopPatternDiagBasGaucheO
 	
-	# 1ère partie pour valider si les jetons du joueur O sont alignés en diagonale de haut en bas vers la gauche à partir du pointeur courant
+	# 1ï¿½re partie pour valider si les jetons du joueur O sont alignï¿½s en diagonale de haut en bas vers la gauche ï¿½ partir du pointeur courant
 	patternDiagHautGaucheO :		
 		mv t5, s1			
 		mv t6, s2			
@@ -468,7 +466,7 @@ valideJoueurO :
 		addi s7, s7, 1
 		j loopPatternDiagHautGaucheO
 		
-	# 2ème partie pour valider si les jetons du joueur O sont alignés en diagonale de haut en bas vers la gauche à partir du pointeur courant
+	# 2ï¿½me partie pour valider si les jetons du joueur O sont alignï¿½s en diagonale de haut en bas vers la gauche ï¿½ partir du pointeur courant
 	patternDiagBasDroiteO :			
 		mv t5, s1			
 		mv t6, s2			
@@ -478,7 +476,7 @@ valideJoueurO :
 		beq s7, t4, joueurOGagne
 		li t0, grilleLigne
 		addi t5, t5, 1
-		bge t5, t0, tourSuivant		# Si aucun jetons du joueur O n'est alignés, c'est au joueur X de jouer
+		bge t5, t0, tourSuivant		# Si aucun jetons du joueur O n'est alignï¿½s, c'est au joueur X de jouer
 		li t0, 8
 		addi t6, t6, 1
 		bge t6, t0, tourSuivant
@@ -497,7 +495,7 @@ valideJoueurO :
 		addi s7, s7, 1
 		j loopPatternDiagBasDroiteO
 	
-	# Si le joueur O aligne ses jetons, la grille est affiché et le joueur O gagne
+	# Si le joueur O aligne ses jetons, la grille est affichï¿½ et le joueur O gagne
 	joueurOGagne :
 		jal routineAfficheGrilleGagnant		# Appel de la routine pour afficher la grille du joueur gagnant O
 		j sortie				# Quitte le jeu
@@ -516,7 +514,7 @@ tourSuivant :
 	bgtz s5, resetTourJoueurX
 	bgtz s6, resetTourJoueurO
 	
-# Affiche un message d'erreur, si la commande joué n'est pas reconnue, à l'exception du saut de ligne, et quitte le programme.
+# Affiche un message d'erreur, si la commande jouï¿½ n'est pas reconnue, ï¿½ l'exception du saut de ligne, et quitte le programme.
 erreurEntree :				
 	li a7, PrintChar
 	li a0, '\n'
@@ -566,8 +564,8 @@ routineAfficherGrille :
 		li t0, 'd'
 		beq s4, t0, messageAuTourDe	# Branche vers le message du joueur courant qui joue durant ce tour
 		
-		# Lorsqu'un des joueurs déborde, cela affiche la grille et un message désignant le joueur perdant
-		bgtz s5, afficheJoueurXDebord	# Si le joueur X déborde, branche pour afficher son message, puis, quitte le programme
+		# Lorsqu'un des joueurs dï¿½borde, cela affiche la grille et un message dï¿½signant le joueur perdant
+		bgtz s5, afficheJoueurXDebord	# Si le joueur X dï¿½borde, branche pour afficher son message, puis, quitte le programme
 		li a7, PrintString		# Sinon, cela affiche le message du Joueur 0, puis, quitte le programme
 		la a0, messJoueurODebord
 		ecall
@@ -580,8 +578,8 @@ routineAfficherGrille :
 		j finAffiche
 		
 	messageAuTourDe :
-		bgtz s5, messXJoue	# Si c'est au tour du joueur X, cela affiche le message désignant que c'est son tour		
-		li a7, PrintString	# Sinon, cela affiche le message désignant que c'est au tour du joueur O
+		bgtz s5, messXJoue	# Si c'est au tour du joueur X, cela affiche le message dï¿½signant que c'est son tour		
+		li a7, PrintString	# Sinon, cela affiche le message dï¿½signant que c'est au tour du joueur O
 		la a0, messJoueurOJoue
 		ecall
 		
@@ -595,7 +593,7 @@ routineAfficherGrille :
 	finAffiche :
 		ret			# Fin de cette routine
 
-# Routine pour ajouter la ligne qui déborde
+# Routine pour ajouter la ligne qui dï¿½borde
 routineAfficheLigneDeborde :
 		li s1, 0
 		la t3, ligneDebord
@@ -622,7 +620,7 @@ routineAfficheLigneDeborde :
 		li a7, PrintChar
 		li a0, '\n'
 		ecall
-	# Ajoute la ligne supplémentaire, lorsqu'un des joueurs débordent
+	# Ajoute la ligne supplï¿½mentaire, lorsqu'un des joueurs dï¿½bordent
 	ajouteLigneDebord :
 		li s2, 0
 		
@@ -649,8 +647,8 @@ routineAfficheLigneDeborde :
 
 # Routine pour ajouter le jeton du joueur courant
 routineAjouterJeton :
-		addi a0, a0, -0x30	# Convertie le charactère saisie par un des joueurs en décimal
-		li s1, 5		# Index à partie du bas de la grille 
+		addi a0, a0, -0x30	# Convertie le charactï¿½re saisie par un des joueurs en dï¿½cimal
+		li s1, 5		# Index ï¿½ partie du bas de la grille 
 		mv s2, a0		# Index colonne courante
 		
 	loop :
@@ -684,9 +682,9 @@ routineAjouterJeton :
 		j finAjoutJeton
 		
 	joueurDeborde :
-		jal routineAfficheLigneDeborde	# Appel la routire pour afficher la ligne supplémentaire avec le jeton du joueur qui déborde
+		jal routineAfficheLigneDeborde	# Appel la routire pour afficher la ligne supplï¿½mentaire avec le jeton du joueur qui dï¿½borde
 		jal routineAfficherGrille	# Appel la routine pour afficher la grille de jeu de base
-		j sortie			# Quitte le programme quand un joueur déborde
+		j sortie			# Quitte le programme quand un joueur dï¿½borde
 		
 	finAjoutJeton :
 		ret				# Fin de cette routine

@@ -1,4 +1,4 @@
 
-# Romain number converter
+# Connect 4 using RISC-V
 
-By using RISC-V Assembler and Runtime Simulator (RARS), user inputs number and results converts this number in romain number
+
